@@ -10,5 +10,7 @@ if (h32 !== "cda8fae4") {
 if (h64 !== "e29f70f8b8c96df7") {
   throw new Error("h64 is not correct");
 }
+// eslint-disable-next-line no-console
 console.log(`All is well: ${h32} should be cda8fae4`);
+// eslint-disable-next-line no-console
 console.log(`All is well: ${h64} should be e29f70f8b8c96df7`);
