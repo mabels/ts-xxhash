@@ -40,10 +40,10 @@ export class XXH64 {
    * Initialize the XXH64 instance with the given seed
    */
   #reset(): this {
-    this.v1.assign(this.seed).add(PRIME64_1.clone()).add(PRIME64_2.clone());
-    this.v2.assign(this.seed).add(PRIME64_2.clone());
+    this.v1.assign(this.seed).add(PRIME64_1).add(PRIME64_2);
+    this.v2.assign(this.seed).add(PRIME64_2);
     this.v3.assign(this.seed);
-    this.v4.assign(this.seed).subtract(PRIME64_1.clone());
+    this.v4.assign(this.seed).subtract(PRIME64_1);
     this.total_len = 0;
     this.memsize = 0;
     return this;
@@ -98,7 +98,7 @@ export class XXH64 {
         (mem[p64 + 5] << 8) | mem[p64 + 4],
         (mem[p64 + 7] << 8) | mem[p64 + 6],
       );
-      this.v1.add(other.multiply(PRIME64_2)).rotl(31).multiply(PRIME64_1.clone());
+      this.v1.add(other.multiply(PRIME64_2)).rotl(31).multiply(PRIME64_1);
       p64 += 8;
       other = new Uint64().fromBits(
         (mem[p64 + 1] << 8) | mem[p64],
@@ -106,7 +106,7 @@ export class XXH64 {
         (mem[p64 + 5] << 8) | mem[p64 + 4],
         (mem[p64 + 7] << 8) | mem[p64 + 6],
       );
-      this.v2.add(other.multiply(PRIME64_2)).rotl(31).multiply(PRIME64_1.clone());
+      this.v2.add(other.multiply(PRIME64_2)).rotl(31).multiply(PRIME64_1);
       p64 += 8;
       other = new Uint64().fromBits(
         (mem[p64 + 1] << 8) | mem[p64],
@@ -114,7 +114,7 @@ export class XXH64 {
         (mem[p64 + 5] << 8) | mem[p64 + 4],
         (mem[p64 + 7] << 8) | mem[p64 + 6],
       );
-      this.v3.add(other.multiply(PRIME64_2)).rotl(31).multiply(PRIME64_1.clone());
+      this.v3.add(other.multiply(PRIME64_2)).rotl(31).multiply(PRIME64_1);
       p64 += 8;
       other = new Uint64().fromBits(
         (mem[p64 + 1] << 8) | mem[p64],
@@ -122,7 +122,7 @@ export class XXH64 {
         (mem[p64 + 5] << 8) | mem[p64 + 4],
         (mem[p64 + 7] << 8) | mem[p64 + 6],
       );
-      this.v4.add(other.multiply(PRIME64_2)).rotl(31).multiply(PRIME64_1.clone());
+      this.v4.add(other.multiply(PRIME64_2)).rotl(31).multiply(PRIME64_1);
 
       p += 32 - this.memsize;
       this.memsize = 0;
@@ -139,7 +139,7 @@ export class XXH64 {
           (processedInput[p + 5] << 8) | processedInput[p + 4],
           (processedInput[p + 7] << 8) | processedInput[p + 6],
         );
-        this.v1.add(other.multiply(PRIME64_2.clone())).rotl(31).multiply(PRIME64_1.clone());
+        this.v1.add(other.multiply(PRIME64_2)).rotl(31).multiply(PRIME64_1);
         p += 8;
         other = new Uint64().fromBits(
           (processedInput[p + 1] << 8) | processedInput[p],
@@ -147,7 +147,7 @@ export class XXH64 {
           (processedInput[p + 5] << 8) | processedInput[p + 4],
           (processedInput[p + 7] << 8) | processedInput[p + 6],
         );
-        this.v2.add(other.multiply(PRIME64_2.clone())).rotl(31).multiply(PRIME64_1.clone());
+        this.v2.add(other.multiply(PRIME64_2)).rotl(31).multiply(PRIME64_1);
         p += 8;
         other = new Uint64().fromBits(
           (processedInput[p + 1] << 8) | processedInput[p],
@@ -155,7 +155,7 @@ export class XXH64 {
           (processedInput[p + 5] << 8) | processedInput[p + 4],
           (processedInput[p + 7] << 8) | processedInput[p + 6],
         );
-        this.v3.add(other.multiply(PRIME64_2.clone())).rotl(31).multiply(PRIME64_1.clone());
+        this.v3.add(other.multiply(PRIME64_2)).rotl(31).multiply(PRIME64_1);
         p += 8;
         other = new Uint64().fromBits(
           (processedInput[p + 1] << 8) | processedInput[p],
@@ -163,7 +163,7 @@ export class XXH64 {
           (processedInput[p + 5] << 8) | processedInput[p + 4],
           (processedInput[p + 7] << 8) | processedInput[p + 6],
         );
-        this.v4.add(other.multiply(PRIME64_2)).rotl(31).multiply(PRIME64_1.clone());
+        this.v4.add(other.multiply(PRIME64_2)).rotl(31).multiply(PRIME64_1);
         p += 8;
       } while (p <= limit);
     }
@@ -254,7 +254,10 @@ export class XXH64 {
       .toString(radix || 10);
   }
 
-  static h64(inputOrSeed: XXHInput | XXHSeed, seed: XXHSeed = 0): XXH64 {
+  static h64(inputOrSeed?: XXHInput | XXHSeed, seed: XXHSeed = 0): XXH64 {
+    if (!inputOrSeed) {
+      return new XXH64();
+    }
     if (isXXHSeed(inputOrSeed)) {
       return new XXH64(inputOrSeed);
     }

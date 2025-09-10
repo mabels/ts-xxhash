@@ -188,7 +188,10 @@ export class XXH32 {
     return this.digest().toString(radix);
   }
 
-  static h32(inputOrSeed: XXHInput | XXHSeed, seed: XXHSeed = 0): XXH32 {
+  static h32(inputOrSeed?: XXHInput | XXHSeed, seed: XXHSeed = 0): XXH32 {
+    if (!inputOrSeed) {
+      return new XXH32();
+    }
     if (isXXHSeed(inputOrSeed)) {
       return new XXH32(inputOrSeed);
     }
