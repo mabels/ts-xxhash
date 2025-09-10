@@ -4,6 +4,7 @@
     "lib": ["ESNext", "DOM"],
     "module": "nodenext",
     "paths": {
+      "@adviser/ts-xxhash": ["./lib/index.ts"]
     },
     "allowImportingTsExtensions": false,
     "declaration": true,

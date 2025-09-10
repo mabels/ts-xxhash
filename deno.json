@@ -4,7 +4,7 @@
   "license": "MIT",
   "unstable": ["sloppy-imports"],
   "exports": {
-     ".": "./lib/index.ts"
+    ".": "./lib/index.ts"
   },
   "lint": {
     "rules": {
@@ -12,8 +12,7 @@
       "exclude": ["no-sloppy-imports"]
     }
   },
-  "imports": {
-  },
+  "imports": {},
   "publish": {
     "include": ["lib/**/*.ts", "README.md", "LICENSE"]
   }

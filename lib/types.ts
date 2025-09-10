@@ -15,10 +15,9 @@ export class Uint32 {
     }
   }
 
-    constructor(value: number | string | bigint = 0) {
+  constructor(value: number | string | bigint = 0) {
     this.value = BigInt(value) & mask32;
   }
-
 
   clone(): Uint32 {
     return new Uint32(this.value);

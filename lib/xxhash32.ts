@@ -112,29 +112,13 @@ export class XXH32 {
       const limit = bEnd - 16;
 
       do {
-        xxh_update(
-          this.v1,
-          (processedInput[p + 1] << 8) | processedInput[p],
-          (processedInput[p + 3] << 8) | processedInput[p + 2],
-        );
+        xxh_update(this.v1, (processedInput[p + 1] << 8) | processedInput[p], (processedInput[p + 3] << 8) | processedInput[p + 2]);
         p += 4;
-        xxh_update(
-          this.v2,
-          (processedInput[p + 1] << 8) | processedInput[p],
-          (processedInput[p + 3] << 8) | processedInput[p + 2],
-        );
+        xxh_update(this.v2, (processedInput[p + 1] << 8) | processedInput[p], (processedInput[p + 3] << 8) | processedInput[p + 2]);
         p += 4;
-        xxh_update(
-          this.v3,
-          (processedInput[p + 1] << 8) | processedInput[p],
-          (processedInput[p + 3] << 8) | processedInput[p + 2],
-        );
+        xxh_update(this.v3, (processedInput[p + 1] << 8) | processedInput[p], (processedInput[p + 3] << 8) | processedInput[p + 2]);
         p += 4;
-        xxh_update(
-          this.v4,
-          (processedInput[p + 1] << 8) | processedInput[p],
-          (processedInput[p + 3] << 8) | processedInput[p + 2],
-        );
+        xxh_update(this.v4, (processedInput[p + 1] << 8) | processedInput[p], (processedInput[p + 3] << 8) | processedInput[p + 2]);
         p += 4;
       } while (p <= limit);
     }
