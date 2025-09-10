@@ -1,0 +1,20 @@
+{
+  "name": "@adviser/ts-xxhash",
+  "version": "1.0.0",
+  "license": "MIT",
+  "unstable": ["sloppy-imports"],
+  "exports": {
+     ".": "./lib/index.ts"
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"],
+      "exclude": ["no-sloppy-imports"]
+    }
+  },
+  "imports": {
+  },
+  "publish": {
+    "include": ["lib/**/*.ts", "README.md", "LICENSE"]
+  }
+}

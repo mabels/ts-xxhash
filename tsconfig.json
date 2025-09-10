@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "lib": ["ESNext", "DOM"],
+    "module": "nodenext",
+    "paths": {
+    },
+    "allowImportingTsExtensions": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist/ts",
+    "removeComments": true,
+    "skipLibCheck": true
+  },
+  "include": ["lib/**/*", "vitest.*.ts", "eslint.config.mjs", "test", "benchmark"],
+  "exclude": ["dist/**", "eslint.config.js", "examples"]
+}
