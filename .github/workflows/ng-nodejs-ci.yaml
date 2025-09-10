@@ -47,10 +47,10 @@ jobs:
       #          node ../.github/workflows/patch-package.json.js "$GITHUB_REF"
       #          git diff
 
-      - name: Build JS @adviser/cement
+      - name: Build JS @adviser/ts-xxhash
         run: |
           pnpm install
-          pnpm run prettier --check
+          pnpm run format --check
           pnpm run lint
           pnpm run build
           pnpm run test
