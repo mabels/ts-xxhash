@@ -23,6 +23,7 @@
     "test": "pnpm run test:js; pnpm run test:deno",
     "test:deno": "deno run --quiet --allow-net --allow-write --allow-run  --allow-sys --allow-ffi  --allow-read --allow-env  ./node_modules/vitest/vitest.mjs --run --project node",
     "test:js": "vitest --run",
+    "bench": "deno run --quiet --allow-net --allow-write --allow-run  --allow-sys --allow-ffi  --allow-read --allow-env  ./node_modules/vitest/vitest.mjs bench --project node --run test/bench.bench.ts",
     "lint": "eslint .",
     "pubdir": "cement preparePubdir --baseDir . --srcDir lib",
     "presmoke": "pnpm run pubdir ; cd pubdir ; pnpm pack",

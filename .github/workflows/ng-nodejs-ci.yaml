@@ -54,6 +54,7 @@ jobs:
           pnpm run lint
           pnpm run build
           pnpm run test
+          pnpm run bench
           pnpm run smoke
 
       - name: Publish @adviser/ts-xxhash  NPM
