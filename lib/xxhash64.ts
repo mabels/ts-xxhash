@@ -43,17 +43,19 @@ function uint8To64(uint8Array: Uint8Array, i: number): bigint {
  */
 export class XXH64 {
   private readonly id = Math.random().toString(36).substring(2);
+  private readonly v = new BigUint64Array(5);
   private readonly seed: bigint;
-  private v1: bigint;
-  private v2: bigint;
-  private v3: bigint;
-  private v4: bigint;
+  // private v1: bigint;
+  // private v2: bigint;
+  // private v3: bigint;
+  // private v4: bigint;
   private total_len: number;
   private memsize: number;
   private readonly memory = new Uint8Array(32);
 
   constructor(seed?: XXHSeed) {
-    this.seed = BigInt(seed || 0);
+    this.v[0] = BigInt(seed || 0);
+    this.seed = this.v[0];
     this.#reset();
   }
 
@@ -61,10 +63,10 @@ export class XXH64 {
    * Initialize the XXH64 instance with the given seed
    */
   #reset(): this {
-    this.v1 = this.seed + PRIME64_1 + PRIME64_2;
-    this.v2 = this.seed + PRIME64_2;
-    this.v3 = this.seed;
-    this.v4 = this.seed - PRIME64_1;
+    this.v[1] = this.seed + PRIME64_1 + PRIME64_2;
+    this.v[2] = this.seed + PRIME64_2;
+    this.v[3] = this.seed;
+    this.v[4] = this.seed - PRIME64_1;
     this.total_len = 0;
     this.memsize = 0;
     return this;
@@ -122,13 +124,13 @@ export class XXH64 {
       const mem = this.memory;
 
       //  this.v1.add(other.multiply(PRIME64_2)).rotl(31).multiply(PRIME64_1);
-      this.v1 = rotl(this.v1 + uint8To64(mem, p64) * PRIME64_2, 31n) * PRIME64_1;
+      this.v[1] = rotl(this.v[1] + uint8To64(mem, p64) * PRIME64_2, 31n) * PRIME64_1;
       p64 += 8;
-      this.v2 = rotl(this.v2 + uint8To64(mem, p64) * PRIME64_2, 31n) * PRIME64_1;
+      this.v[2] = rotl(this.v[2] + uint8To64(mem, p64) * PRIME64_2, 31n) * PRIME64_1;
       p64 += 8;
-      this.v3 = rotl(this.v3 + uint8To64(mem, p64) * PRIME64_2, 31n) * PRIME64_1;
+      this.v[3] = rotl(this.v[3] + uint8To64(mem, p64) * PRIME64_2, 31n) * PRIME64_1;
       p64 += 8;
-      this.v4 = rotl(this.v4 + uint8To64(mem, p64) * PRIME64_2, 31n) * PRIME64_1;
+      this.v[4] = rotl(this.v[4] + uint8To64(mem, p64) * PRIME64_2, 31n) * PRIME64_1;
 
       p += 32 - this.memsize;
       this.memsize = 0;
@@ -138,13 +140,13 @@ export class XXH64 {
       const limit = bEnd - 32;
 
       do {
-        this.v1 = rotl(this.v1 + uint8To64(processedInput, p) * PRIME64_2, 31n) * PRIME64_1;
+        this.v[1] = rotl(this.v[1] + uint8To64(processedInput, p) * PRIME64_2, 31n) * PRIME64_1;
         p += 8;
-        this.v2 = rotl(this.v2 + uint8To64(processedInput, p) * PRIME64_2, 31n) * PRIME64_1;
+        this.v[2] = rotl(this.v[2] + uint8To64(processedInput, p) * PRIME64_2, 31n) * PRIME64_1;
         p += 8;
-        this.v3 = rotl(this.v3 + uint8To64(processedInput, p) * PRIME64_2, 31n) * PRIME64_1;
+        this.v[3] = rotl(this.v[3] + uint8To64(processedInput, p) * PRIME64_2, 31n) * PRIME64_1;
         p += 8;
-        this.v4 = rotl(this.v4 + uint8To64(processedInput, p) * PRIME64_2, 31n) * PRIME64_1;
+        this.v[4] = rotl(this.v[4] + uint8To64(processedInput, p) * PRIME64_2, 31n) * PRIME64_1;
         p += 8;
       } while (p <= limit);
     }
@@ -165,29 +167,31 @@ export class XXH64 {
     const input = this.memory;
     let p = 0;
     const bEnd = this.memsize;
-    let h64: bigint, h: bigint;
+    const h = new BigUint64Array(2);
+
+    // let h64: bigint, h: bigint;
 
     if (this.total_len >= 32) {
-      h64 = rotl(this.v1, 1n);
-      h64 = h64 + rotl(this.v2, 7n);
-      h64 = h64 + rotl(this.v3, 12n);
-      h64 = h64 + rotl(this.v4, 18n);
+      h[0] = rotl(this.v[1], 1n);
+      h[0] = h[0] + rotl(this.v[2], 7n);
+      h[0] = h[0] + rotl(this.v[3], 12n);
+      h[0] = h[0] + rotl(this.v[4], 18n);
 
-      h64 = h64 ^ (rotl(this.v1 * PRIME64_2, 31n) * PRIME64_1);
-      h64 = h64 * PRIME64_1 + PRIME64_4;
+      h[0] = h[0] ^ (rotl(this.v[1] * PRIME64_2, 31n) * PRIME64_1);
+      h[0] = h[0] * PRIME64_1 + PRIME64_4;
 
-      h64 = h64 ^ (rotl(this.v2 * PRIME64_2, 31n) * PRIME64_1);
-      h64 = h64 * PRIME64_1 + PRIME64_4;
+      h[0] = h[0] ^ (rotl(this.v[2] * PRIME64_2, 31n) * PRIME64_1);
+      h[0] = h[0] * PRIME64_1 + PRIME64_4;
 
-      h64 = h64 ^ (rotl(this.v3 * PRIME64_2, 31n) * PRIME64_1);
-      h64 = h64 * PRIME64_1 + PRIME64_4;
+      h[0] = h[0] ^ (rotl(this.v[3] * PRIME64_2, 31n) * PRIME64_1);
+      h[0] = h[0] * PRIME64_1 + PRIME64_4;
 
-      h64 = h64 ^ (rotl(this.v4 * PRIME64_2, 31n) * PRIME64_1);
-      h64 = h64 * PRIME64_1 + PRIME64_4;
+      h[0] = h[0] ^ (rotl(this.v[4] * PRIME64_2, 31n) * PRIME64_1);
+      h[0] = h[0] * PRIME64_1 + PRIME64_4;
     } else {
-      h64 = this.seed + PRIME64_5;
+      h[0] = this.seed + PRIME64_5;
     }
-    h64 += BigInt(this.total_len);
+    h[0] += BigInt(this.total_len);
 
     while (p <= bEnd - 8) {
       //      u.fromBits(
@@ -200,7 +204,7 @@ export class XXH64 {
       //      h64.xor(u.clone()).rotl(27).multiply(PRIME64_1).add(PRIME64_4);
 
       const u = rotl(uint8To64(input, p) * PRIME64_2, 31n) * PRIME64_1;
-      h64 = rotl(h64 ^ u, 27n) * PRIME64_1 + PRIME64_4;
+      h[0] = rotl(h[0] ^ u, 27n) * PRIME64_1 + PRIME64_4;
       p += 8;
     }
 
@@ -213,7 +217,7 @@ export class XXH64 {
       );
       // u.fromBits(, (input[p + 3] << 8) | input[p + 2], 0, 0);
 
-      h64 = rotl(h64 ^ (u * PRIME64_1), 23n) * PRIME64_2 + PRIME64_3;
+      h[0] = rotl(h[0] ^ (u * PRIME64_1), 23n) * PRIME64_2 + PRIME64_3;
       p += 4;
     }
 
@@ -222,23 +226,23 @@ export class XXH64 {
       // h64.xor(u.clone().multiply(PRIME64_5)).rotl(11).multiply(PRIME64_1);
       const u = BigInt(input[p++]);
       // u.fromBits(input[p++], 0, 0, 0);
-      h64 = rotl(h64 ^ (u * PRIME64_5), 11n) * PRIME64_1;
+      h[0] = rotl(h[0] ^ (u * PRIME64_5), 11n) * PRIME64_1;
       // h64.xor(u.clone().multiply(PRIME64_5)).rotl(11).multiply(PRIME64_1);
     }
 
-    h = (h64 & 0xffff_ffff_ffff_ffffn) >> 33n;
-    h64 = ((h64 ^ h) * PRIME64_2) & 0xffff_ffff_ffff_ffffn;
+    h[1] = (h[0]) >> 33n;
+    h[0] = ((h[0] ^ h[1]) * PRIME64_2);
 
-    h = h64 >> 29n;
-    h64 = ((h64 ^ h) * PRIME64_3) & 0xffff_ffff_ffff_ffffn;
+    h[1] = h[0] >> 29n;
+    h[0] = ((h[1] ^ h[0]) * PRIME64_3);
 
-    h = h64 >> 32n;
-    h64 = h64 ^ h;
+    h[1] = h[0] >> 32n;
+    h[0] = h[1] ^ h[0];
 
     // Reset the state
     this.#reset();
 
-    return h64; // & 0xffff_ffff_ffff_ffffn;
+    return h[0]; // & 0xffff_ffff_ffff_ffffn;
   }
 
   toString(radix = 16): string {
