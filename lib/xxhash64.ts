@@ -24,16 +24,20 @@ const rotlVar = new BigUint64Array(2);
 function rotl(value: bigint, shift: bigint): bigint {
   const n = shift & 63n;
   rotlVar[0] = value;
-  rotlVar[1] = ((rotlVar[0] << n)) | ((rotlVar[0]) >> (64n - n));
+  rotlVar[1] = (rotlVar[0] << n) | (rotlVar[0] >> (64n - n));
   return rotlVar[1];
 }
 
 // return ((uint8Array[i + 3] << 24) | (uint8Array[i + 2] << 16) | (uint8Array[i + 1] << 8) | uint8Array[i]) >>> 0;
 const uint8To64Var = new BigUint64Array(3);
 function uint8To64(uint8Array: Uint8Array, i: number): bigint {
-  uint8To64Var[0] = BigInt(((uint8Array[i + 3] << 24) | (uint8Array[i + 2] << 16) | (uint8Array[i + 1] << 8) | uint8Array[i]) >>> 0);
-  uint8To64Var[1] = BigInt(((uint8Array[i + 7] << 24) | (uint8Array[i + 6] << 16) | (uint8Array[i + 5] << 8) | uint8Array[i + 4]) >>> 0);
-  uint8To64Var[2] = (uint8To64Var[0] | (uint8To64Var[1] << 32n));
+  uint8To64Var[0] = BigInt(
+    ((uint8Array[i + 3] << 24) | (uint8Array[i + 2] << 16) | (uint8Array[i + 1] << 8) | uint8Array[i]) >>> 0,
+  );
+  uint8To64Var[1] = BigInt(
+    ((uint8Array[i + 7] << 24) | (uint8Array[i + 6] << 16) | (uint8Array[i + 5] << 8) | uint8Array[i + 4]) >>> 0,
+  );
+  uint8To64Var[2] = uint8To64Var[0] | (uint8To64Var[1] << 32n);
   return uint8To64Var[2];
 
   // return (
@@ -149,9 +153,9 @@ export class XXH64 {
 
       do {
         this.v[1] = rotl(this.v[1] + uint8To64(processedInput, p) * PRIME64_2, 31n) * PRIME64_1;
-        this.v[2] = rotl(this.v[2] + uint8To64(processedInput, p+8) * PRIME64_2, 31n) * PRIME64_1;
-        this.v[3] = rotl(this.v[3] + uint8To64(processedInput, p+16) * PRIME64_2, 31n) * PRIME64_1;
-        this.v[4] = rotl(this.v[4] + uint8To64(processedInput, p+24) * PRIME64_2, 31n) * PRIME64_1;
+        this.v[2] = rotl(this.v[2] + uint8To64(processedInput, p + 8) * PRIME64_2, 31n) * PRIME64_1;
+        this.v[3] = rotl(this.v[3] + uint8To64(processedInput, p + 16) * PRIME64_2, 31n) * PRIME64_1;
+        this.v[4] = rotl(this.v[4] + uint8To64(processedInput, p + 24) * PRIME64_2, 31n) * PRIME64_1;
         p += 32;
       } while (p <= limit);
     }
@@ -235,11 +239,11 @@ export class XXH64 {
       // h64.xor(u.clone().multiply(PRIME64_5)).rotl(11).multiply(PRIME64_1);
     }
 
-    h[1] = (h[0]) >> 33n;
-    h[0] = ((h[0] ^ h[1]) * PRIME64_2);
+    h[1] = h[0] >> 33n;
+    h[0] = (h[0] ^ h[1]) * PRIME64_2;
 
     h[1] = h[0] >> 29n;
-    h[0] = ((h[1] ^ h[0]) * PRIME64_3);
+    h[0] = (h[1] ^ h[0]) * PRIME64_3;
 
     h[1] = h[0] >> 32n;
     h[0] = h[1] ^ h[0];

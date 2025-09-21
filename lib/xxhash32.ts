@@ -173,7 +173,7 @@ export class XXH32 {
     const input = this.memory;
     let p = 0;
     const bEnd = this.memsize;
-    let h32: number
+    let h32: number;
 
     if (this.total_len >= 16) {
       h32 = rotl32(this.v1, 1);
