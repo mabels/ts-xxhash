@@ -20,22 +20,35 @@ const [PRIME64_1, PRIME64_2, PRIME64_3, PRIME64_4, PRIME64_5] = new BigUint64Arr
 
 const nullBuffer = new Uint8Array(32);
 
+const rotlVar = new BigUint64Array(2);
 function rotl(value: bigint, shift: bigint): bigint {
   const n = shift & 63n;
-  return ((value << n) & 0xffff_ffff_ffff_ffffn) | ((value & 0xffff_ffff_ffff_ffffn) >> (64n - n));
+  rotlVar[0] = value;
+  rotlVar[1] = ((rotlVar[0] << n)) | ((rotlVar[0]) >> (64n - n));
+  return rotlVar[1];
 }
 
+// return ((uint8Array[i + 3] << 24) | (uint8Array[i + 2] << 16) | (uint8Array[i + 1] << 8) | uint8Array[i]) >>> 0;
+const uint8To64Var = new BigUint64Array(3);
 function uint8To64(uint8Array: Uint8Array, i: number): bigint {
-  return (
-    (BigInt(uint8Array[i + 7]) << 56n) |
-    (BigInt(uint8Array[i + 6]) << 48n) |
-    (BigInt(uint8Array[i + 5]) << 40n) |
-    (BigInt(uint8Array[i + 4]) << 32n) |
-    (BigInt(uint8Array[i + 3]) << 24n) |
-    (BigInt(uint8Array[i + 2]) << 16n) |
-    (BigInt(uint8Array[i + 1]) << 8n) |
-    BigInt(uint8Array[i])
-  );
+  uint8To64Var[0] = BigInt(((uint8Array[i + 3] << 24) | (uint8Array[i + 2] << 16) | (uint8Array[i + 1] << 8) | uint8Array[i]) >>> 0);
+  uint8To64Var[1] = BigInt(((uint8Array[i + 7] << 24) | (uint8Array[i + 6] << 16) | (uint8Array[i + 5] << 8) | uint8Array[i + 4]) >>> 0);
+  uint8To64Var[2] = (uint8To64Var[0] | (uint8To64Var[1] << 32n));
+  return uint8To64Var[2];
+
+  // return (
+  //    BigInt() |
+  //   (BigInt(((uint8Array[i + 7] << 24) | (uint8Array[i + 6] << 16) | (uint8Array[i + 5] << 8) | uint8Array[i + 4]) >>> 0) << 32n)
+
+  //   // (BigInt(uint8Array[i + 7]) << 56n) |
+  //   // (BigInt(uint8Array[i + 6]) << 48n) |
+  //   // (BigInt(uint8Array[i + 5]) << 40n) |
+  //   // (BigInt(uint8Array[i + 4]) << 32n) |
+  //   // (BigInt(uint8Array[i + 3]) << 24n) |
+  //   // (BigInt(uint8Array[i + 2]) << 16n) |
+  //   // (BigInt(uint8Array[i + 1]) << 8n) |
+  //   // BigInt(uint8Array[i])
+  // );
 }
 
 /**
@@ -120,17 +133,12 @@ export class XXH64 {
       // XXH64_memcpy(this.memory + this.memsize, input, 32-this.memsize);
       this.memory.set(processedInput.subarray(0, 32 - this.memsize), this.memsize);
 
-      let p64 = 0;
       const mem = this.memory;
 
-      //  this.v1.add(other.multiply(PRIME64_2)).rotl(31).multiply(PRIME64_1);
-      this.v[1] = rotl(this.v[1] + uint8To64(mem, p64) * PRIME64_2, 31n) * PRIME64_1;
-      p64 += 8;
-      this.v[2] = rotl(this.v[2] + uint8To64(mem, p64) * PRIME64_2, 31n) * PRIME64_1;
-      p64 += 8;
-      this.v[3] = rotl(this.v[3] + uint8To64(mem, p64) * PRIME64_2, 31n) * PRIME64_1;
-      p64 += 8;
-      this.v[4] = rotl(this.v[4] + uint8To64(mem, p64) * PRIME64_2, 31n) * PRIME64_1;
+      this.v[1] = rotl(this.v[1] + uint8To64(mem, 0) * PRIME64_2, 31n) * PRIME64_1;
+      this.v[2] = rotl(this.v[2] + uint8To64(mem, 8) * PRIME64_2, 31n) * PRIME64_1;
+      this.v[3] = rotl(this.v[3] + uint8To64(mem, 16) * PRIME64_2, 31n) * PRIME64_1;
+      this.v[4] = rotl(this.v[4] + uint8To64(mem, 24) * PRIME64_2, 31n) * PRIME64_1;
 
       p += 32 - this.memsize;
       this.memsize = 0;
@@ -141,13 +149,10 @@ export class XXH64 {
 
       do {
         this.v[1] = rotl(this.v[1] + uint8To64(processedInput, p) * PRIME64_2, 31n) * PRIME64_1;
-        p += 8;
-        this.v[2] = rotl(this.v[2] + uint8To64(processedInput, p) * PRIME64_2, 31n) * PRIME64_1;
-        p += 8;
-        this.v[3] = rotl(this.v[3] + uint8To64(processedInput, p) * PRIME64_2, 31n) * PRIME64_1;
-        p += 8;
-        this.v[4] = rotl(this.v[4] + uint8To64(processedInput, p) * PRIME64_2, 31n) * PRIME64_1;
-        p += 8;
+        this.v[2] = rotl(this.v[2] + uint8To64(processedInput, p+8) * PRIME64_2, 31n) * PRIME64_1;
+        this.v[3] = rotl(this.v[3] + uint8To64(processedInput, p+16) * PRIME64_2, 31n) * PRIME64_1;
+        this.v[4] = rotl(this.v[4] + uint8To64(processedInput, p+24) * PRIME64_2, 31n) * PRIME64_1;
+        p += 32;
       } while (p <= limit);
     }
 
