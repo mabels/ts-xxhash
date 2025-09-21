@@ -1,89 +1,3 @@
-const mask32 = 0xffffffffn;
-/**
- * BigInt-based 32-bit unsigned integer operations for xxhash
- */
-export class Uint32 {
-  private value: bigint;
-
-  static from(value: number | string | bigint | Uint32 ): Uint32 {
-    if (value instanceof Uint32) {
-      return value.clone();
-    } else {
-      return new Uint32(value);
-    }
-  }
-
-  constructor(value: number | string | bigint = 0) {
-    this.value = BigInt(value) & mask32;
-  }
-
-  clone(): Uint32 {
-    return new Uint32(this.value);
-  }
-
-  assign(other: Uint32 | bigint | number): Uint32 {
-    if (other instanceof Uint32) {
-      this.value = other.value;
-    } else {
-      this.value = BigInt(other) & mask32;
-    }
-    return this;
-  }
-
-  add(other: Uint32): Uint32 {
-    this.value = (this.value + other.value) & mask32;
-    return this;
-  }
-
-  subtract(other: Uint32): Uint32 {
-    this.value = (this.value - other.value) & mask32;
-    return this;
-  }
-
-  multiply(other: Uint32): Uint32 {
-    this.value = (this.value * other.value) & mask32;
-    return this;
-  }
-
-  xor(other: Uint32): Uint32 {
-    this.value = this.value ^ other.value;
-    return this;
-  }
-
-  rotl(bits: number): Uint32 {
-    const n = BigInt(bits) & 31n;
-    this.value = ((this.value << n) | (this.value >> (32n - n))) & mask32;
-    return this;
-  }
-
-  shiftRight(bits: number): Uint32 {
-    this.value = this.value >> BigInt(bits);
-    return this;
-  }
-
-  fromNumber(n: number): Uint32 {
-    this.value = BigInt(n) & 0xffffffffn;
-    return this;
-  }
-
-  fromBits(low: number, high: number): Uint32 {
-    this.value = (BigInt(high & 0xffff) << 16n) | BigInt(low & 0xffff);
-    return this;
-  }
-
-  toNumber(): bigint {
-    return this.value;
-  }
-
-  toString(radix?: number): string {
-    const n = this.value.toString(radix || 10);
-    if (radix === 16) {
-      return n.padStart(8, "0");
-    }
-    return n;
-  }
-}
-
 // const mask64 = 0xffffffffffffffffn;
 // /**
 //  * BigInt-based 64-bit unsigned integer operations for xxhash64
@@ -173,10 +87,10 @@ export class Uint32 {
 // }
 
 export type XXHInput = string | ArrayBuffer | Uint8Array;
-export type XXHSeed = number | bigint // | Uint32 | Uint64;
+export type XXHSeed = number | bigint;
 
 export function isXXHSeed(value: unknown): value is XXHSeed {
-  return typeof value === "number" || typeof value === "bigint" || value instanceof Uint32 // || value instanceof Uint64;
+  return typeof value === "number" || typeof value === "bigint";
 }
 
 export function isXXHInput(value: unknown): value is XXHInput {

@@ -10,13 +10,13 @@ import { XXHInput, XXHSeed, isXXHSeed, txtEncoder } from "./types.js";
 /*
  * Constants
  */
-const [PRIME64_1, PRIME64_2, PRIME64_3, PRIME64_4, PRIME64_5] = [
+const [PRIME64_1, PRIME64_2, PRIME64_3, PRIME64_4, PRIME64_5] = new BigUint64Array([
   11400714785074694791n,
   14029467366897019727n,
   1609587929392839161n,
   9650029242287828579n,
   2870177450012600261n,
-];
+]);
 
 const nullBuffer = new Uint8Array(32);
 
@@ -167,7 +167,6 @@ export class XXH64 {
     const bEnd = this.memsize;
     let h64: bigint, h: bigint;
 
-
     if (this.total_len >= 32) {
       h64 = rotl(this.v1, 1n);
       h64 = h64 + rotl(this.v2, 7n);
@@ -210,10 +209,8 @@ export class XXH64 {
       // h64.xor(u.clone().multiply(PRIME64_1)).rotl(23).multiply(PRIME64_2).add(PRIME64_3);
       // const u = input[p + 1] << 8n | input[p] | input[p + 3] << 8n | input[p + 2] << 24n;
       const u = BigInt(
-        BigInt(input[p + 0]) << 0n | 
-        BigInt(input[p + 1] )<< 8n | 
-        BigInt(input[p + 2] )<< 16n | 
-        BigInt(input[p + 3] )<< 24n);
+        (BigInt(input[p + 0]) << 0n) | (BigInt(input[p + 1]) << 8n) | (BigInt(input[p + 2]) << 16n) | (BigInt(input[p + 3]) << 24n),
+      );
       // u.fromBits(, (input[p + 3] << 8) | input[p + 2], 0, 0);
 
       h64 = rotl(h64 ^ (u * PRIME64_1), 23n) * PRIME64_2 + PRIME64_3;

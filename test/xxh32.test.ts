@@ -1,8 +1,51 @@
 import { describe, it, expect } from "vitest";
 import { XXH } from "../lib/index.js";
+import { rotl32, uint8To32 } from "../lib/xxhash32.ts";
 
 describe("XXH", () => {
   const seed = 0;
+
+  describe("uint8To32", () => {
+    it("XXH32 rotl32", () => {
+      const input = new Uint8Array([0xff, 0xff, 0xef, 0xee]);
+      expect(rotl32(uint8To32(input, 0), 12)).toBe(0xffff_feee);
+    });
+
+    it("XXH32 rotl32", () => {
+      const input = new Uint8Array([0x01, 0x02, 0x03, 0x04]);
+      expect(rotl32(uint8To32(input, 0), 16)).toBe(0x0201_0403);
+    });
+
+    it("XXH32 uint8To32", () => {
+      const input = new Uint8Array([0x01, 0x02, 0x03, 0x04]);
+      expect(uint8To32(input, 0)).toBe(0x04030201);
+    });
+
+    it("XXH32 uint8To32", () => {
+      const input = new Uint8Array([-0x01, -0x02, -0x03, -0x04]);
+      expect(uint8To32(input, 0)).toBe(0xfcfdfeff);
+    });
+
+    it("XXH32 uint8To32", () => {
+      const input = new Uint8Array([0xf0, 0x00, 0x00, 0x000]);
+      expect(uint8To32(input, 0)).toBe(0xf0);
+    });
+
+    it("XXH32 uint8To32", () => {
+      const input = new Uint8Array([0x0, 0xf0, 0x00, 0x000]);
+      expect(uint8To32(input, 0)).toBe(0xf000);
+    });
+
+    it("XXH32 uint8To32", () => {
+      const input = new Uint8Array([0x0, 0x0, 0xf0, 0x000]);
+      expect(uint8To32(input, 0)).toBe(0xf0_0000);
+    });
+
+    it("XXH32 uint8To32", () => {
+      const input = new Uint8Array([0x0, 0x0, 0x0, 0xf0]);
+      expect(uint8To32(input, 0)).toBe(0xf000_0000);
+    });
+  });
 
   describe("with small input multiple of 4", () => {
     const input = "abcd";
