@@ -57,12 +57,12 @@ class XXH32Result {
  */
 export class XXH32 {
   private readonly seed: number;
-  private v1: number;
-  private v2: number;
-  private v3: number;
-  private v4: number;
-  private total_len: number;
-  private memsize: number;
+  private v1 = 0;
+  private v2 = 0;
+  private v3 = 0;
+  private v4 = 0;
+  private total_len = 0;
+  private memsize = 0;
   private readonly memory = new Uint8Array(16);
 
   constructor(seed?: XXHSeed) {

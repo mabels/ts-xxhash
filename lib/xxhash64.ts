@@ -66,8 +66,8 @@ export class XXH64 {
   // private v2: bigint;
   // private v3: bigint;
   // private v4: bigint;
-  private total_len: number;
-  private memsize: number;
+  private total_len = 0;
+  private memsize = 0;
   private readonly memory = new Uint8Array(32);
 
   constructor(seed?: XXHSeed) {

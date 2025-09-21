@@ -4,8 +4,8 @@ const h32 = XXH.h32("abcd", 0xabcd).toString(16);
 
 const h64 = XXH.h64("abcd", 0xabcd).toString(16);
 
-if (h32 !== "cda8fae4") {
-  throw new Error("h32 is not correct");
+if (h32 !== "CDA8FAE4") {
+  throw new Error("h32 is not correct:" + h32);
 }
 if (h64 !== "e29f70f8b8c96df7") {
   throw new Error("h64 is not correct");

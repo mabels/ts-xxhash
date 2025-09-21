@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { XXH } from "../lib/index.js";
-import { rotl32, uint8To32 } from "../lib/xxhash32.ts";
+import { rotl32, uint8To32 } from "../lib/xxhash32.js";
 
 describe("XXH", () => {
   const seed = 0;
