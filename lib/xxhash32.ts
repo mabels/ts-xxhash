@@ -16,8 +16,8 @@ const PRIME32_3 = 3266489917 >>> 0;
 const PRIME32_4 = 668265263 >>> 0;
 const PRIME32_5 = 374761393 >>> 0;
 
-export function rotl32(value: number, shift: number): number {
-  const n = shift & 31;
+export function rotl32(value: number, n: number): number {
+  // const n = shift & 31;
   return (((value << n) >>> 0) | (value >>> (32 - n))) >>> 0;
 }
 
